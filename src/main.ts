@@ -1,8 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import helmet from 'helmet';
+import * as helmet from 'helmet';
 
-const PORT = process.env.PORT || 5500
+const PORT = process.env.PORT || 5500;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
