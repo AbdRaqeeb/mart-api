@@ -1,0 +1,24 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type UserDTO {
+  userId: ID!
+  username: String!
+  firstName: String!
+  lastName: String!
+  email: String!
+  phone: String!
+  image: String
+  address: String
+  role: String!
+  resetPasswordToken: String
+  confirmEmailToken: String
+  confirmPhoneToken: String
+  isEmailConfirmed: Boolean
+  isPhoneConfirmed: String
+}
+
+type Query {
+  user(userId: String!): UserDTO!
+}
