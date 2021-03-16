@@ -3,6 +3,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 
 declare let process: {
   env: {
@@ -20,6 +21,7 @@ declare let process: {
       isGlobal: true,
     }),
     UsersModule,
+    AuthModule,
     GraphQLModule.forRoot({
       autoSchemaFile: 'schema.gql',
       playground: true,

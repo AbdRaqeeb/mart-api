@@ -12,13 +12,70 @@ type UserDTO {
   image: String
   address: String
   role: String!
-  resetPasswordToken: String
-  confirmEmailToken: String
-  confirmPhoneToken: String
   isEmailConfirmed: Boolean
-  isPhoneConfirmed: String
+  isPhoneConfirmed: Boolean
+}
+
+type UserToken {
+  token: String!
+  user: UserDTO!
 }
 
 type Query {
-  user(userId: String!): UserDTO!
+  user: UserDTO
+  forgotPassword(input: ForgotPasswordInput!): String!
+  CheckResetToken(input: ResetTokenInput!): UserToken!
+}
+
+input ForgotPasswordInput {
+  email: String!
+}
+
+input ResetTokenInput {
+  token: String!
+}
+
+type Mutation {
+  registerUser(input: CreateUserInput!): UserToken!
+  loginUser(input: LoginUserInput!): UserToken!
+  updateUser(input: UpdateUserInput!): UserDTO!
+  updateUserPassword(input: UpdatePasswordInput!): UserDTO!
+  resetPassword(input: ResetPassword!): UserToken!
+  confirmEmail(input: ConfirmTokenInput!): UserToken!
+  confirmPhone(input: ConfirmTokenInput!): UserToken!
+}
+
+input CreateUserInput {
+  username: String!
+  firstName: String!
+  lastName: String!
+  password: String!
+  email: String!
+  phone: String!
+}
+
+input LoginUserInput {
+  user: String!
+  password: String!
+}
+
+input UpdateUserInput {
+  firstName: String
+  lastName: String
+  email: String
+  phone: String
+  address: String
+}
+
+input UpdatePasswordInput {
+  currentPassword: String!
+  newPassword: String!
+}
+
+input ResetPassword {
+  password: String!
+}
+
+input ConfirmTokenInput {
+  token: String!
 }
