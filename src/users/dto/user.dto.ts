@@ -30,17 +30,8 @@ export class UserDTO {
   role: string;
 
   @Field({ nullable: true })
-  resetPasswordToken: string;
-
-  @Field({ nullable: true })
-  confirmEmailToken: string;
-
-  @Field({ nullable: true })
-  confirmPhoneToken: string;
-
-  @Field({ nullable: true })
   isEmailConfirmed: boolean;
 
   @Field({ nullable: true })
-  isPhoneConfirmed: string;
+  isPhoneConfirmed: boolean;
 }
