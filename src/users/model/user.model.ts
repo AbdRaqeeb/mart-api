@@ -20,6 +20,7 @@ export class User extends Model<User> {
     autoIncrement: false,
     allowNull: false,
     defaultValue: DataType.UUIDV4,
+    unique: true,
   })
   userId: string;
 
@@ -49,7 +50,10 @@ export class User extends Model<User> {
   })
   email: string;
 
-  @Column(DataType.STRING)
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
   phone: string;
 
   @Column({
@@ -74,8 +78,8 @@ export class User extends Model<User> {
   @Column(DataType.STRING)
   resetPasswordToken: string;
 
-  @Column(DataType.STRING)
-  resetPasswordExpire: string;
+  @Column(DataType.DATE)
+  resetPasswordExpire: number;
 
   @Column(DataType.STRING)
   confirmEmailToken: string;
@@ -110,7 +114,23 @@ export class User extends Model<User> {
   }
 
   generateConfirmationToken() {
-    this.confirmEmailToken = cryptoRandomString({ length: 6, type: 'numeric' });
-    this.confirmPhoneToken = cryptoRandomString({ length: 6, type: 'numeric' });
+    const emailToken = cryptoRandomString({ length: 6, type: 'numeric' });
+    const phoneToken = cryptoRandomString({ length: 6, type: 'numeric' });
+
+    this.confirmEmailToken = emailToken;
+    this.confirmPhoneToken = phoneToken;
+
+    return { emailToken, phoneToken };
+  }
+
+  generatePasswordResetToken() {
+    const resetToken = cryptoRandomString({ length: 4, type: 'numeric' });
+
+    this.resetPasswordToken = resetToken;
+
+    //set expire
+    this.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
+
+    return resetToken;
   }
 }
