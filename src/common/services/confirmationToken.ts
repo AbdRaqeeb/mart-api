@@ -1,6 +1,6 @@
 import sendEmail from '../utils/sendEmail';
 import sendSMS from '../utils/sendSms';
-import { User } from '../../../users/model/user.model';
+import { User } from '../../users/model/user.model';
 
 export const registerPhoneAndEmailConfirmation = async (
   user: User,
@@ -24,5 +24,5 @@ export const registerPhoneAndEmailConfirmation = async (
   });
 
   // confirm phone
-  await sendSMS(user.phone, phoneMessage);
+  // await sendSMS(user.phone.toString(), phoneMessage);
 };
