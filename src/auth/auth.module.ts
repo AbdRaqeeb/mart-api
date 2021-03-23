@@ -5,7 +5,7 @@ import { AuthService } from './auth.service';
 import { UsersModule } from '../users/users.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { GqlAuthGuard } from './guards/gql-auth.guard';
-import { jwtConstants, jwtExpire } from './common/constants/jwt.constant';
+import { jwtConstants, jwtExpire } from '../common/constants/jwt.constant';
 
 @Module({
   imports: [
