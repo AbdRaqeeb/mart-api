@@ -176,7 +176,7 @@ export class UsersService {
     const user = await this.userModel.findOne({
       where: {
         confirmEmailToken: token,
-        isEmailConfirmed: 'false',
+        isEmailConfirmed: false,
       },
     });
 
@@ -198,7 +198,7 @@ export class UsersService {
     const user = await this.userModel.findOne({
       where: {
         confirmPhoneToken: token,
-        isPhoneConfirmed: 'false',
+        isPhoneConfirmed: false,
       },
     });
 
