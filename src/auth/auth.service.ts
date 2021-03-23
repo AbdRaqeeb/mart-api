@@ -10,10 +10,11 @@ import { LoginUserInput } from '../users/dto/input/login-user.input';
 import { UpdateUserInput } from '../users/dto/input/update-user.input';
 import { UpdatePasswordInput } from '../users/dto/input/update-password.input';
 import { ForgotPasswordInput } from '../users/dto/input/forgot-password.input';
-import { passwordResetToken } from './common/services/passwordResetToken';
+import { passwordResetToken } from '../common/services/passwordResetToken';
 import { ResetTokenInput } from '../users/dto/input/reset-token.input';
 import { ResetPassword } from '../users/dto/input/reset-password.input';
 import { ConfirmTokenInput } from './dto/input/confirm-token.input';
+import { ReadStream } from 'fs';
 
 @Injectable()
 export class AuthService {
@@ -96,6 +97,18 @@ export class AuthService {
     const user = await this.usersService.confirmPhone(input);
 
     return this.sendTokenResponse(user);
+  }
+
+  async uploadProfilePhoto(
+    userId: string,
+    filename: string,
+    readStream: ReadStream,
+  ): Promise<UserDTO> {
+    return this.usersService.uploadPhoto(userId, filename, readStream);
+  }
+
+  async uploadPhoto(userId: string, image: string): Promise<UserDTO> {
+    return this.usersService.updatePhoto(userId, image);
   }
 
   private async sendTokenResponse(user: User): Promise<UserToken> {

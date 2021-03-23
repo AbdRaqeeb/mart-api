@@ -1,4 +1,5 @@
 import { Client } from 'africastalking-ts';
+import 'dotenv/config';
 
 const client = new Client({
   apiKey: process.env.SMS_API_KEY,
@@ -7,7 +8,7 @@ const client = new Client({
 
 const sendSMS = async (phone: string, message: string) => {
   await client.sendSms({
-    to: [phone],
+    to: [phone.toString()],
     message: message,
     from: process.env.SMS_FROM_NAME,
   });

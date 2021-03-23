@@ -1,4 +1,4 @@
-import { Resolver, Mutation, Args, Query } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
 import { UserToken } from './model/user-token';
 import { CreateUserInput } from '../users/dto/input/create-user.input';
@@ -11,9 +11,9 @@ import { UpdateUserInput } from '../users/dto/input/update-user.input';
 import { UpdatePasswordInput } from '../users/dto/input/update-password.input';
 import { ForgotPasswordInput } from '../users/dto/input/forgot-password.input';
 import { ResetTokenInput } from '../users/dto/input/reset-token.input';
-import { User } from '../users/model/user.model';
 import { ResetPassword } from '../users/dto/input/reset-password.input';
 import { ConfirmTokenInput } from './dto/input/confirm-token.input';
+import { FileUpload, GraphQLUpload } from 'graphql-upload';
 
 @Resolver()
 export class AuthResolver {
@@ -47,7 +47,7 @@ export class AuthResolver {
   }
 
   @UseGuards(GqlAuthGuard)
-  @Mutation(() => UserDTO, { name: 'updateUserPassword' })
+  @Mutation(() => UserToken, { name: 'updateUserPassword' })
   async updatePassword(
     @CurrentUser() { userId }: UserDTO,
     @Args('input') input: UpdatePasswordInput,
@@ -90,5 +90,28 @@ export class AuthResolver {
     @Args('input') input: ConfirmTokenInput,
   ): Promise<UserToken> {
     return this.authService.confirmPhone(input);
+  }
+
+  @UseGuards(GqlAuthGuard)
+  @Mutation(() => UserDTO, { name: 'uploadProfilePhoto' })
+  async uploadPhoto(
+    @CurrentUser() { userId }: UserDTO,
+    @Args({ name: 'image', type: () => GraphQLUpload })
+    { filename, createReadStream }: FileUpload,
+  ): Promise<UserDTO> {
+    return this.authService.uploadProfilePhoto(
+      userId,
+      filename,
+      createReadStream(),
+    );
+  }
+
+  @UseGuards(GqlAuthGuard)
+  @Mutation(() => UserDTO, { name: 'updatePhoto' })
+  async updatePhoto(
+    @CurrentUser() { userId }: UserDTO,
+    @Args('image') image: string,
+  ): Promise<UserDTO> {
+    return this.authService.uploadPhoto(userId, image);
   }
 }

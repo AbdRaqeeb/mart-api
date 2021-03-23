@@ -1,5 +1,5 @@
 import sendEmail from '../utils/sendEmail';
-import { User } from '../../../users/model/user.model';
+import { User } from '../../users/model/user.model';
 import { InternalServerErrorException } from '@nestjs/common';
 
 export const passwordResetToken = async (

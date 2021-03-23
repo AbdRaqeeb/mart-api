@@ -39,10 +39,12 @@ type Mutation {
   registerUser(input: CreateUserInput!): UserToken!
   loginUser(input: LoginUserInput!): UserToken!
   updateUser(input: UpdateUserInput!): UserDTO!
-  updateUserPassword(input: UpdatePasswordInput!): UserDTO!
+  updateUserPassword(input: UpdatePasswordInput!): UserToken!
   resetPassword(input: ResetPassword!): UserToken!
   confirmEmail(input: ConfirmTokenInput!): UserToken!
   confirmPhone(input: ConfirmTokenInput!): UserToken!
+  uploadProfilePhoto(image: Upload!): UserDTO!
+  updatePhoto(image: String!): UserDTO!
 }
 
 input CreateUserInput {
@@ -79,3 +81,6 @@ input ResetPassword {
 input ConfirmTokenInput {
   token: String!
 }
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
