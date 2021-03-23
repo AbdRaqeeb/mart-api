@@ -24,7 +24,6 @@ declare let process: {
     AuthModule,
     GraphQLModule.forRoot({
       autoSchemaFile: 'schema.gql',
-      playground: true,
     }),
     SequelizeModule.forRoot({
       dialect: 'postgres',
