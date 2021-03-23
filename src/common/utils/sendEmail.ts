@@ -1,8 +1,10 @@
-import nodemailer from 'nodemailer';
+import * as nodemailer from 'nodemailer';
 import { EmailOptionsType } from '../types/email-options.type';
 
 const sendEmail = async (options: EmailOptionsType) => {
   const transporter = nodemailer.createTransport({
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     host: process.env.SMTP_HOST,
     port: process.env.SMTP_PORT,
     auth: {
