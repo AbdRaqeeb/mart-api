@@ -7,7 +7,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Op } from 'sequelize';
 import { User } from './model/user.model';
 import { CreateUserInput } from './dto/input/create-user.input';
-import { registerPhoneAndEmailConfirmation } from '../auth/common/services/confirmationToken';
+import { registerPhoneAndEmailConfirmation } from '../common/services/confirmationToken';
 import { UpdateUserInput } from './dto/input/update-user.input';
 import { UpdatePasswordInput } from './dto/input/update-password.input';
 import { ForgotPasswordInput } from './dto/input/forgot-password.input';
@@ -15,6 +15,9 @@ import { PasswordResetToken } from '../auth/model/password-reset-token';
 import { ResetTokenInput } from './dto/input/reset-token.input';
 import { ResetPassword } from './dto/input/reset-password.input';
 import { ConfirmTokenInput } from '../auth/dto/input/confirm-token.input';
+import { uploadImage } from '../common/utils/image-upload';
+import { usersFolder } from '../common/constants/folders';
+import { ReadStream } from 'fs';
 
 @Injectable()
 export class UsersService {
@@ -31,31 +34,19 @@ export class UsersService {
   }
 
   async getUserByEmail(email: string): Promise<User> {
-    const user = await this.userModel.findOne({
+    return await this.userModel.findOne({
       where: {
         email,
       },
     });
-
-    if (!user) {
-      throw new NotFoundException(`User not found`);
-    }
-
-    return user;
   }
 
   async getUserByUsername(username: string): Promise<User> {
-    const user = await this.userModel.findOne({
+    return await this.userModel.findOne({
       where: {
         username,
       },
     });
-
-    if (!user) {
-      throw new NotFoundException(`User not found`);
-    }
-
-    return user;
   }
 
   async createUser(input: CreateUserInput): Promise<User> {
@@ -71,7 +62,7 @@ export class UsersService {
 
     const checkUsername = await this.userModel.findOne({
       where: {
-        email: input.username,
+        username: input.username,
       },
     });
 
@@ -118,13 +109,17 @@ export class UsersService {
   ): Promise<User> {
     const user = await this.getUserById(userId);
 
-    if (!user.matchPassword(input.currentPassword)) {
+    if (!user) {
+      throw new NotFoundException(`User not found`);
+    }
+
+    if (!(await user.matchPassword(input.currentPassword))) {
       throw new BadRequestException(`Password is incorrect`);
     }
 
-    user.password = input.newPassword;
-
-    await user.save();
+    await user.update({
+      password: input.newPassword,
+    });
 
     await user.reload();
 
@@ -168,9 +163,9 @@ export class UsersService {
   ): Promise<User> {
     const user = await this.getUserById(userId);
 
-    user.password = password;
-
-    await user.save();
+    await user.update({
+      password,
+    });
 
     await user.reload();
 
@@ -181,7 +176,7 @@ export class UsersService {
     const user = await this.userModel.findOne({
       where: {
         confirmEmailToken: token,
-        isEmailConfirmed: false,
+        isEmailConfirmed: 'false',
       },
     });
 
@@ -189,10 +184,10 @@ export class UsersService {
       throw new BadRequestException(`Invalid token`);
     }
 
-    user.confirmEmailToken = undefined;
-    user.isEmailConfirmed = true;
-
-    await user.save();
+    await user.update({
+      confirmEmailToken: undefined,
+      isEmailConfirmed: true,
+    });
 
     await user.reload();
 
@@ -203,7 +198,7 @@ export class UsersService {
     const user = await this.userModel.findOne({
       where: {
         confirmPhoneToken: token,
-        isPhoneConfirmed: false,
+        isPhoneConfirmed: 'false',
       },
     });
 
@@ -211,10 +206,48 @@ export class UsersService {
       throw new BadRequestException(`Invalid token`);
     }
 
-    user.confirmPhoneToken = undefined;
-    user.isPhoneConfirmed = true;
+    await user.update({
+      confirmPhoneToken: undefined,
+      isPhoneConfirmed: true,
+    });
 
-    await user.save();
+    await user.reload();
+
+    return user;
+  }
+
+  async uploadPhoto(
+    userId: string,
+    filename: string,
+    readStream: ReadStream,
+  ): Promise<User> {
+    const user = await this.userModel.findByPk(userId);
+
+    if (!user) {
+      throw new NotFoundException(`User not found`);
+    }
+
+    const imageUrl = await uploadImage(filename, readStream, usersFolder);
+
+    await user.update({
+      image: imageUrl,
+    });
+
+    await user.reload();
+
+    return user;
+  }
+
+  async updatePhoto(userId: string, image: string): Promise<User> {
+    const user = await this.userModel.findByPk(userId);
+
+    if (!user) {
+      throw new NotFoundException(`User not found`);
+    }
+
+    await user.update({
+      image,
+    });
 
     await user.reload();
 
