@@ -5,9 +5,8 @@ import {
   Table,
   BeforeSave,
 } from 'sequelize-typescript';
-import bcrypt from 'bcryptjs';
-import { NextFunction } from 'express';
-import cryptoRandomString from 'crypto-random-string';
+import * as bcrypt from 'bcryptjs';
+import * as cryptoRandomString from 'crypto-random-string';
 
 @Table({
   timestamps: true,
@@ -88,25 +87,24 @@ export class User extends Model<User> {
   confirmPhoneToken: string;
 
   @Column({
-    type: DataType.STRING,
+    type: DataType.BOOLEAN,
     defaultValue: false,
   })
   isEmailConfirmed: boolean;
 
   @Column({
-    type: DataType.STRING,
+    type: DataType.BOOLEAN,
     defaultValue: false,
   })
   isPhoneConfirmed: boolean;
 
   @BeforeSave
-  static async hashPassword(user: User, next: NextFunction) {
+  static async hashPassword(user: User) {
     if (!user.changed('password')) {
-      next();
+    } else {
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(user.password, salt);
     }
-
-    const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(user.password, salt);
   }
 
   matchPassword(enteredPassword: string) {
